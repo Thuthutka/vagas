@@ -6,10 +6,13 @@ export class Registration extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            UserName: "",
-            UserPassword: "",
-            UserEmail: "",
-            UserPhone: ""
+            Name: "",
+            Password: "",
+            Email: "",
+            PhoneNumber: "",
+            UserType: 0,
+            TicketId: "",
+            error: ""
         };
     }
 
@@ -22,42 +25,42 @@ export class Registration extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
-        const { UserName, UserPassword, UserEmail, UserPhone } = this.state;
+        const { Name, Password, Email, PhoneNumber, UserType, TicketId } = this.state;
+    
+    // Create a new user object
+    const newUser = {
         
-        // Create a new user object
-        const newUser = {
-            UserName,
-            UserPassword,
-            UserEmail,
-            UserPhone
-        };
+        Name: Name,
+        Password: Password,
+        Email: Email,
+        PhoneNumber: PhoneNumber,
+        UserType: 0,
+        TicketId: [] // Assuming TicketId is optional
+         
+    };
 
-        axios.post(variables.API_URL + "Employee", newUser, {
+        axios.post(variables.API_URL + "Authentication/Register", newUser, {
             headers: {
                 'Content-Type': 'application/json'
             }
         })
         .then(response => {
-            console.log('User created successfully!', response);
-            // Clear form fields after successful submission
-            this.setState({
-                UserName: "",
-                UserPassword: "",
-                UserEmail: "",
-                UserPhone: ""
-            });
+            console.log('User created successfully!', response.data);
+            // Optionally, you can redirect to login page or do something else after successful registration
         })
         .catch(error => {
             if (error.response) {
                 console.error('Error creating user:', error.response.data);
+                this.setState({ error: error.response.data.errors[0] });
             } else {
                 console.error('Error creating user:', error.message);
+                this.setState({ error: "An error occurred while registering. Please try again later." });
             }
         });
     }
 
     render() {
-        const { UserName, UserPassword, UserEmail, UserPhone, error } = this.state;
+        const { Name, Password, Email, PhoneNumber, UserType, TicketId, error } = this.state;
     
         return (
             <div>
@@ -66,19 +69,19 @@ export class Registration extends Component {
                 <form onSubmit={this.handleSubmit}>
                     <div className="mb-3">
                         <label htmlFor="username" className="form-label">Username</label>
-                        <input type="text" className="form-control" id="UserName" name="UserName" value={UserName} onChange={this.handleChange} />
+                        <input type="text" className="form-control" id="Name" name="Name" value={Name} onChange={this.handleChange} />
                     </div>
                     <div className="mb-3">
                         <label htmlFor="password" className="form-label">Password</label>
-                        <input type="password" className="form-control" id="UserPassword" name="UserPassword" value={UserPassword} onChange={this.handleChange} />
+                        <input type="password" className="form-control" id="Password" name="Password" value={Password} onChange={this.handleChange} />
                     </div>
                     <div className="mb-3">
                         <label htmlFor="email" className="form-label">Email</label>
-                        <input type="email" className="form-control" id="UserEmail" name="UserEmail" value={UserEmail} onChange={this.handleChange} />
+                        <input type="email" className="form-control" id="Email" name="Email" value={Email} onChange={this.handleChange} />
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="phone" className="form-label">Phone</label>
-                        <input type="text" className="form-control" id="UserPhone" name="UserPhone" value={UserPhone} onChange={this.handleChange} />
+                        <label htmlFor="phone" className="form-label">Phone Number</label>
+                        <input type="text" className="form-control" id="PhoneNuber" name="PhoneNumber" value={PhoneNumber} onChange={this.handleChange} />
                     </div>
                     <button type="submit" className="btn btn-primary">Register</button>
                 </form>
